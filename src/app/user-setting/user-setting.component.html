@@ -1,0 +1,140 @@
+<div class="page-content">
+  <h1 class="header">API User Setting</h1>
+  <div class="page-body">
+    <div class="body-30">
+      <card-list></card-list>
+    </div>
+    <div class="body-70">
+
+      <div class="d-flex" *ngIf="mode == 'new'">
+        <div class="body-30 head-f">Search SAS AI User</div>
+        <div class="body-70">
+
+          <mat-form-field
+            color="accent" appearance="fill" 
+            style="width: 100%; padding: 0;" 
+            class="full-width">
+            <input #focusSearchBar
+              matInput [(ngModel)]="userIDSearch" 
+              (keyup.enter)="mode == 'new' && findUserId()" 
+              [readonly]="mode != 'new'"
+            />
+            <button mat-button *ngIf="mode == 'new'" matSuffix mat-icon-button (click)="findUserId()" >
+              <span nz-icon nzType="search" nzTheme="outline"></span>
+            </button>
+
+            <mat-select #selectNewUserList
+              (selectionChange)="selectUserFromSearchList($event.value)"><!--(selectionChange) needs [value] to functions correctly-->
+              <mat-option *ngFor="let option of userSelectList" [value]="option"><!--hide arrow and selected value in css of this folder-->
+                {{option.AICODE}}: {{option.USERID}}
+              </mat-option>
+            </mat-select>
+
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="d-flex">
+        <div class="body-30 head-f">User ID</div>
+        <div class="body-70">
+            <input class="input-from" matInput disabled  [value]="selectedUserLabel"/>
+        </div>
+      </div>
+
+      <div class="d-flex">
+        <div class="body-30 head-f">Group Information</div>
+        <div class="body-70">
+          <input class="input-from" matInput disabled [(ngModel)]="user.groupInfo"/>
+        </div>
+      </div>
+      <div class="d-flex">
+        <div class="body-30 head-f">Assign Alternative Data</div>
+        <div class="body-70 ct-checkbox">
+          <div class="checkbox-list">
+            <mat-checkbox 
+              class="margin-checkbox" 
+              *ngFor="let dataItem of user.dataBlocks" 
+              [(ngModel)]="dataItem.checked"
+              [disabled]="lockEditing">
+              {{dataItem.blockName}}
+            </mat-checkbox>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex">
+        <div class="body-30 head-f">#of call threshold *</div>
+        <div class="body-70">
+          <input 
+            class="input-from" matInput 
+            [(ngModel)]="user.thresholdWeek" 
+            [disabled]="lockEditing"
+            type="number"
+            (change)="adjustThreshold()" style="width: 30%" />
+          <span class="txt-per">Per Week</span>
+        </div>
+      </div>
+      <div class="d-flex">
+        <div class="body-40">
+          <div class="card-user fix-h">
+            <div class="head-card"><p>API Secret ID *</p></div>
+            <div class="ip-reload">
+              <input class="input-from input-from-sub reload" matInput [(ngModel)]="user.secretKey" [disabled]="lockEditing"/>
+              <button mat-icon-button (click)="genSecret()" [disabled]="lockEditing">
+                <span nz-icon nzType="reload" nzTheme="outline"></span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="body-60">
+          <div class="card-user  fix-h">
+            <div class="head-card"><p>Valid Date *</p></div>
+            <div class="datepicker-body">
+              <span>
+                <mat-form-field color="accent" appearance="fill" style="width: 35%;">
+                  <input [disabled]="lockEditing"
+                    readonly autocomplete="off" (click)="!lockEditing && picker3.open()" placeholder="Choose a date" 
+                    [min]="today"
+                    [max]="user.secretEnd"
+                    matInput [matDatepicker]="picker3" [(ngModel)]="user.secretStart"/>
+                  <mat-hint>MM/DD/YYYY</mat-hint>
+                  <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+                  <mat-datepicker #picker3></mat-datepicker>
+                  <span *ngIf="user.secretStart"
+                    matSuffix
+                    (click)="!lockEditing && user.secretStart=undefined">
+                    X
+                  </span>
+                </mat-form-field>
+              </span>
+              <span style="margin: 20px">-</span>
+              <span>
+                <mat-form-field color="accent" appearance="fill" style="width: 35%;">
+                  <input [disabled]="lockEditing"
+                    readonly autocomplete="off" (click)="!lockEditing && picker4.open()" placeholder="Choose a date" 
+                    [min]="user.secretStart"
+                    matInput [matDatepicker]="picker4" [(ngModel)]="user.secretEnd"/>
+                  <mat-hint>MM/DD/YYYY</mat-hint>
+                  <mat-datepicker-toggle matSuffix [for]="picker4"></mat-datepicker-toggle>
+                  <mat-datepicker #picker4></mat-datepicker>
+                  <span *ngIf="user.secretEnd"
+                    matSuffix
+                     (click)="!lockEditing && user.secretEnd=undefined">
+                    X
+                  </span>
+                </mat-form-field>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <mat-checkbox class="margin-checkbox-rev" [(ngModel)]="user.disabled" [disabled]="lockEditing">Disable</mat-checkbox>
+      </div>
+      <div>
+        <div class="example-button-row btn-bottom">
+          <button mat-raised-button class="btn-save" (click)="saveUserInfo()" [disabled]="lockEditing">Save</button>
+          <button mat-raised-button class="btn-cancel" (click)="newUserInfo()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

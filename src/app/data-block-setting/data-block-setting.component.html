@@ -1,0 +1,58 @@
+<div class="page-content">
+  <h1 class="header">Alternative Data Setting</h1>
+  <div class="page-body">
+    <div class="body-30">
+      <div >
+        <mat-card class="bd">
+          <div class="d-flex">
+            <div class="h-card-list">Alternative Data: </div>
+            <div class="h-card-list">{{data.length}}/99 </div>
+            <div>
+              <button mat-raised-button class="count" (click)="addDataBlock()">+</button>
+              <button [disabled]="modelMain.status!='edit'" mat-raised-button class="count" (click)="removeDataBlock()">-</button>
+            </div>
+          </div>
+          <div class="h-60">
+            <input   class="input-from" matInput placeholder="Alternative Data Name Search" [(ngModel)]="modelSearch.searchTxt" [ngModelOptions]="{standalone: true}"
+            (keyup)="searchTxt()">
+            
+              <mat-list  style="overflow-y: auto;height: 80%;margin-top: 2%;">
+                <mat-list-item *ngFor="let dataItem of data"  role="listitem" class="item-list" style="height: max-content;">
+                  <a class="btn-item" style="margin-bottom: 2%;margin-top: 2%;" (click)="selectDatablock(dataItem)">{{dataItem.blockName}}</a>
+                    <mat-divider></mat-divider>
+                </mat-list-item>
+              
+              </mat-list>
+           
+          </div>
+        </mat-card>
+      </div>
+    </div>
+    <div class="body-70">
+      <div class="d-flex">
+        <div class="body-30 head-f">Alternative Data Name*</div>
+        <div class="body-70">
+          <input [disabled]="modelMain.status==''" class="input-from" matInput [(ngModel)]="modelMain.blockName" autocomplete="off" maxlength="255"/>
+        </div>
+      </div>
+      <div class="d-flex">
+        <div class="body-30 head-f">Description</div>
+        <div class="body-70">
+          <textarea [disabled]="modelMain.status==''" class="txt-area"  [(ngModel)]="modelMain.blockDesc" autocomplete="off" maxlength="255"></textarea>
+        </div>
+      </div>
+      <div class="d-flex">
+        <div class="body-30 head-f">Alternative Data URL*</div>
+        <div class="body-70">
+          <input [disabled]="modelMain.status==''" class="input-from" matInput  [(ngModel)]="modelMain.blockUrl" autocomplete="off" maxlength="255"/>
+        </div>
+      </div>
+      <div>
+        <div class="example-button-row btn-bottom">
+          <button mat-raised-button class="btn-save" (click)="saveDataBlock()" >Save</button>
+          <button mat-raised-button class="btn-cancel" (click)="cancelDataBlock()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,51 @@
+@import "~@angular/material/theming";
+
+@include mat-core();
+
+$first-custom-typography: mat-typography-config(
+  $font-family: "Prompt",
+   
+);
+
+.first-typography {
+  @include angular-material-typography($first-custom-typography);
+}
+
+$spinner-size:70px;
+
+.spinner{
+  height:100%;
+  overflow: hidden;
+}
+
+.mdl-spinner{
+	height:$spinner-size;
+}
+
+p{
+	padding:0% 5% 0%;
+}
+label {
+	margin:0px;
+}
+
+.spinner-size {
+	width:70px;
+	height:70px;
+}
+
+.spinner{
+	position:relative;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner-on {
+  
+ 	background-color: #ffffff9e;
+	display: flex;
+	z-index: 999999;
+	position: absolute;
+	width: 100%;
+}
