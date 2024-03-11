@@ -1,0 +1,29 @@
+.bd{
+    border: 1px solid #B2B2B2;
+}
+.d-flex{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.h-60{
+    height: 56vh;
+}
+.h-card-list{
+    font-weight: 500;
+    font-size: 16px;
+
+}
+.count{
+    background-color: #016798;
+    color: #ffffff;
+    min-width: auto;
+    margin: 0px 5px;
+}
+.item-list{
+    color: #7F7F7F;
+}
+.btn-item:hover{
+    color: black;
+    cursor: pointer;
+}

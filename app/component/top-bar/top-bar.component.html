@@ -1,0 +1,29 @@
+<div>
+    <div class="navbar">
+      <div class="logo-nav item-nav-f">
+          <img src="assets/pngegg.png" />
+      </div>
+      <div class="item-nav">
+          <a routerLink="/home"  >Home</a>
+      </div>
+      <div class="item-nav">
+        <a routerLink="/User-Setting" routerLinkActive="active" >API User Setting</a>      
+    </div>
+      <div class="item-nav">
+        <a routerLink="/Data-Block-Setting"  >Alternative Data Setting</a> 
+          
+      </div>
+      <div class="item-nav">
+        <a routerLink="/Usage-Report"  >API Usage Report</a> 
+          
+      </div>
+      <div class="item-nav">
+        <a (click)="logout()"> Logout</a> 
+      </div>
+      <div style="position: absolute;right: 15px;">
+        <i nz-icon nzType="user" nzTheme="outline"></i>  {{userLogin}}
+      </div>
+
+    </div>
+  </div>
+  
