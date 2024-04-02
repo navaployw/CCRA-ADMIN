@@ -85,9 +85,9 @@ public final class SymmetricCipher
 
     private Cipher cipher = null;
 
-    private String user_key_algor = null;
+    private String userKeyAlgor = null;
 
-    private String user_cipher_algor = null;
+    private String userCipherAlgor = null;
 
     private String user_key = null;
     
@@ -96,29 +96,27 @@ public final class SymmetricCipher
     {
         defaultKey = decodeKey(DEFAULT_SECRET_KEY_TEXT);
         defaultCipher = Cipher.getInstance(DEFAULT_CIPHER_ALGORITHM);
+
         infoLog= String.format("defaultKey>>> %s", defaultKey);
         logger.info(infoLog);
+
         infoLog = String.format("defaultCipher>>> %s", defaultCipher);
         logger.info(infoLog);
+
         infoLog = String.format("DEFAULT_SECRET_KEY_TEXT>>> %s", DEFAULT_SECRET_KEY_TEXT);
         logger.info(infoLog);
+
         if(defaultKey.getEncoded() != null){
             infoLog = String.format("defaultKey>>> %s", new Base64().encodeAsString(defaultKey.getEncoded()));
-        logger.info(infoLog);
+            logger.info(infoLog);
         }
-
-        Properties props = new Properties();
-     
-
        
-            user_key_algor = "AES";
-            user_cipher_algor = "AES";
-            user_key = "Y9cFfapTWdmk+7VNqjS1zor7p65xVkdPVAXLmtdmMhVOeiOoWGYeQJtbU8p6bDQe0FRURG9x9oR7FPbpt2fDGP+ieEoKa0gjEqw9DX5pgvufikX1TImdN0PwCrie54YvgMqpgSOZvM6sFUwNrqENR5M8n0qKaWSHomhdaJJNPi7AnMmdfSy8hPK0eScz8CYpIFya0CaZuwo8L7Dieqgpx7PNx3+WlRX3Tyiq3T1u5jeXOtPpngVYuBTjBaqFdCjPY++ejIh39vuAe/I1qo0jOhEOdulQxVmwwbfVJ6U3MrE=";
-        
-        
+        userKeyAlgor = SecretKeyProvider.USER_KEY_ALGOR;
+        userCipherAlgor = SecretKeyProvider.USER_CIPHER_ALGOR;
+        user_key = SecretKeyProvider.USER_KEY;
 
-        if ((null == user_key_algor) || (user_key_algor.length() == 0)
-            || (null == user_cipher_algor) || (user_cipher_algor.length() == 0)
+        if ((null == userKeyAlgor) || (userKeyAlgor.length() == 0)
+            || (null == userCipherAlgor) || (userCipherAlgor.length() == 0)
             || (null == user_key) || (user_key.length() == 0)
             || (null == (user_key = decrypt(defaultCipher, defaultKey, user_key))))
         {
@@ -130,7 +128,7 @@ public final class SymmetricCipher
         {
             logger.info("Enter else");
             key = decodeKey(user_key);
-            cipher = Cipher.getInstance(user_cipher_algor);
+            cipher = Cipher.getInstance(userCipherAlgor);
             logger.info("User's Secret Key loaded.");
         }
 
