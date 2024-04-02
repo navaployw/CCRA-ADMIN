@@ -12,8 +12,10 @@ import java.util.Properties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -35,7 +37,7 @@ import org.slf4j.LoggerFactory;
 */
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
@@ -56,22 +58,19 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
         // We don't need CSRF for this example
-        httpSecurity.csrf().disable()
+        // httpSecurity.csrf().disable()
+        httpSecurity.csrf(Customizer.withDefaults())
         // don't authenticate this particular request
-        .authorizeHttpRequests()
-        
-        .requestMatchers("/get_ccra_report").permitAll()
-        .requestMatchers("/api/admin/checkLogin"
+        .authorizeHttpRequests(authorize -> authorize
+                .requestMatchers("/get_ccra_report"
+                                    ,"/api/admin/checkLogin"
                                     ,"/api/admin/logout"
                                     ,"/api/admin/getVersionNo"
-        ).permitAll()
-        .requestMatchers("/api/admin/**").authenticated() 
-        .requestMatchers("/api/user/**").authenticated() 
-        .requestMatchers("/api/report/**").authenticated() 
-        .requestMatchers("/v3/**").permitAll()
-        .requestMatchers("/ccraapiauth/registerUser").permitAll()
-        .requestMatchers(
-                                    "/*"
+                                    ,"/api/admin/**"
+                                    ,"/api/user/**"
+                                    ,"/api/report/**"
+                                    ,"/v3/**"
+                                    ,"/ccraapiauth/registerUser"
                                     ,"/error"
                                     ,"/index.html"
                                     , "/assets/**"
@@ -80,21 +79,30 @@ public class WebSecurityConfig {
                                     , "/runtime.*"
                                     , "/styles.*"
                                     , "/favicon.ico"
-                                    ).permitAll()
-        .requestMatchers("/swagger-ui.html").permitAll()
-        .requestMatchers("/swagger-ui/**").permitAll()
-        .requestMatchers("/api-docs/**").permitAll()
-        // all other requests need to be authenticated
-        .anyRequest().authenticated().and()
+                                    ,"/swagger-ui.html"
+                                    ,"/swagger-ui/**"
+                                    ,"/api-docs/**"
+                )
+                .permitAll()
+                .anyRequest().authenticated()
+            )
+        .formLogin(formLogin -> formLogin
+            .loginPage("/login")
+            .permitAll()
+        )
+              
         // make sure we use stateless session; session won't be used to
         // store user's state.
-        .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
-        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        .exceptionHandling(exceptionHandlingCustomizer -> exceptionHandlingCustomizer
+            .authenticationEntryPoint(jwtAuthenticationEntryPoint))
+            // .and()
+        .sessionManagement(sessionManagement -> sessionManagement
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         // Add a filter to validate the tokens with every request
         httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         
-        httpSecurity.cors();
+        httpSecurity.cors(Customizer.withDefaults());
         
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
