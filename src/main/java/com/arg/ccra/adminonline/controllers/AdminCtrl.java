@@ -22,6 +22,7 @@ import com.arg.ccra.adminonline.models.Duplicate;
 import com.arg.ccra.adminonline.models.LoginData;
 import com.arg.ccra.adminonline.models.Member;
 import com.arg.ccra.adminonline.models.ResponseModel;
+import com.arg.ccra.adminonline.models.UserInfo;
 import com.arg.ccra.adminonline.models.security.ViewApiUser;
 import com.arg.ccra.adminonline.services.AdminService;
 import com.arg.ccra.adminonline.services.ApiCtrlService;
