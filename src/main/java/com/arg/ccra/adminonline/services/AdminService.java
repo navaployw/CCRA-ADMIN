@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import com.arg.ccra.adminonline.controllers.UserInfo;
 import com.arg.ccra.adminonline.dao.AdminLoginDAO;
 import com.arg.ccra.adminonline.dao.SpmGroupDao;
 import com.arg.ccra.adminonline.models.CountDataBlock;
@@ -30,6 +29,7 @@ import com.arg.ccra.adminonline.models.LoginData;
 import com.arg.ccra.adminonline.models.Member;
 import com.arg.ccra.adminonline.models.ResponseModel;
 import com.arg.ccra.adminonline.models.User;
+import com.arg.ccra.adminonline.models.UserInfo;
 import com.arg.ccra.adminonline.models.security.ViewApiUser;
 import com.arg.ccra.adminonline.utils.SymmetricCipher;
 

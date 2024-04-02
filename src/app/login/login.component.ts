@@ -4,6 +4,7 @@ import { Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from
 import { ApiService } from '../apiclient/api.service';
 import { SessionStorageService } from 'ngx-webstorage';
 import { Injectable } from '@angular/core';
+import { UserInfo } from '../model/UserInteface';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -14,7 +15,7 @@ import { Injectable } from '@angular/core';
 })
 
 export class LoginComponent implements OnInit {
-  modelMain: any;
+  modelMain: UserInfo;
   isLoadingOne = false;
   isLoadMenu = false;
 
@@ -25,7 +26,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this._api.doLogout();
-    this.modelMain = {};
+    this.modelMain = {username: '',pwd:''};
 
   }
   hide: boolean = true;
@@ -34,7 +35,6 @@ export class LoginComponent implements OnInit {
     this.hide = !this.hide;
   }
   public login() {
-    console.log("this.modelMain>>>", this.modelMain);
 
     if (this.modelMain.username == undefined || this.modelMain.username == '') {
       Swal.fire('', 'User ID is Required', 'warning')
@@ -44,7 +44,6 @@ export class LoginComponent implements OnInit {
     } else {
 
       this._api.checkLogin(this.modelMain, (res: any) => {
-        console.log("res>>>",res)
         if(res.result){
           this.sessionSt.store("loginFlag",true);
           this._api.reInitMenu();
