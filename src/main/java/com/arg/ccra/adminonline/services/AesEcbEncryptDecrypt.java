@@ -10,6 +10,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.util.codec.binary.Base64;
 
+import com.arg.ccra.adminonline.utils.SecretKeyProvider;
+
 
 public class AesEcbEncryptDecrypt {
 
@@ -57,7 +59,7 @@ public class AesEcbEncryptDecrypt {
     public String encrypt(String strToEncrypt) {
         String encrypted = "";
         try {
-            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+            Cipher cipher = Cipher.getInstance(SecretKeyProvider.PROVIDER_SECRET_KEY);
 
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
 
@@ -74,7 +76,7 @@ public class AesEcbEncryptDecrypt {
     public String decrypt(String strToDecrypt) {
         String decrypted = "";
         try {
-            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+            Cipher cipher = Cipher.getInstance(SecretKeyProvider.PROVIDER_SECRET_KEY);
 
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
             decrypted = new String(cipher.doFinal(Base64.decodeBase64(strToDecrypt)));

@@ -34,6 +34,8 @@ import org.slf4j.LoggerFactory;
 public final class SymmetricCipher
 {
 
+  
+
   private final Logger logger = (Logger) LoggerFactory.getLogger(this.getClass());
     private static final int[] STREAM = {
         0x724f, 0x3041, 0x4258, 0x4e79, 0x4142, 0x3971, 0x5958, 0x5a68, 0x6543,
