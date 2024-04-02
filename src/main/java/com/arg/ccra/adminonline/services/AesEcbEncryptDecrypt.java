@@ -57,7 +57,7 @@ public class AesEcbEncryptDecrypt {
     public String encrypt(String strToEncrypt) {
         String encrypted = "";
         try {
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
 
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
 
@@ -74,7 +74,7 @@ public class AesEcbEncryptDecrypt {
     public String decrypt(String strToDecrypt) {
         String decrypted = "";
         try {
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
 
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
             decrypted = new String(cipher.doFinal(Base64.decodeBase64(strToDecrypt)));
