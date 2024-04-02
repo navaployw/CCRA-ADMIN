@@ -8,7 +8,6 @@ package com.arg.ccra.adminonline.controllers;
 
 import java.util.List;
 import org.json.JSONException;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,9 +37,10 @@ public class AdminCtrl {
     private AdminService adminService;
     @Autowired
     private ApiCtrlService apiCtrlService;
+
     @RequestMapping(value = "/checkLogin", method = {RequestMethod.POST})
-    public LoginData checkLogin(@RequestBody String requestJson, HttpServletRequest req, HttpServletResponse res) throws Exception {
-        return adminService.checkLoginService(requestJson,  res, req);
+    public LoginData checkLogin(@RequestBody UserInfo userInfo, HttpServletRequest req, HttpServletResponse res) throws Exception {
+        return adminService.checkLoginService(userInfo,  res, req);
     }
 
     @RequestMapping(value = "/logout", method = {RequestMethod.POST})

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.arg.ccra.adminonline.controllers.UserInfo;
 import com.arg.ccra.adminonline.dao.AdminLoginDAO;
 import com.arg.ccra.adminonline.dao.SpmGroupDao;
 import com.arg.ccra.adminonline.models.CountDataBlock;
@@ -55,13 +56,13 @@ public class AdminService {
         return adminLoginDAO.findByUid(uid);
     }
     
-    public LoginData checkLoginService(String requestJson , HttpServletResponse res, HttpServletRequest req) throws JSONException {
-        logText = String.format("<<<<<checkLogin>>>> %s", requestJson);
+    public LoginData checkLoginService(UserInfo userInfo , HttpServletResponse res, HttpServletRequest req) throws JSONException {
+        logText = String.format("<<<<<checkLogin>>>> %s", userInfo);
         logger.info(logText);
-        JSONObject json = new JSONObject(requestJson);
-        logText = String.format("usernameIN>>>> %s", json.get(USER_NAME));
+        
+        logText = String.format("usernameIN>>>> %s", userInfo.getUsername());
         logger.info(logText);
-        logText = String.format("pwdIN>>>> %s", json.get("pwd"));
+        logText = String.format("pwdIN>>>> %s", userInfo.getPwd());
         logger.info(logText);
         HttpServletRequest requestHttp = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         logText = String.format("IP:: %s", requestHttp.getRemoteAddr());
@@ -70,8 +71,8 @@ public class AdminService {
         LoginData loginResult = new LoginData();
         loginResult.setResult(Boolean.FALSE);
         loginResult.setMessage(NOPERMISSION);
-        User user = adminLoginDAO.login(json.get(USER_NAME).toString());
-            if (json.get(USER_NAME).equals(user.getUserName())) {
+        User user = adminLoginDAO.login(userInfo.getUsername());
+            if (userInfo.getUsername().equals(user.getUserName())) {
                 try {
                     SymmetricCipher cy = SymmetricCipher.getInstance();
                     logText = String.format("usernameDB>>>> %s", user.getUserName());
@@ -79,20 +80,20 @@ public class AdminService {
                     logText = String.format("pwdDB>>>> %s", cy.decrypt(user.getPassword()));
                     logger.info(logText);
                     //passw x
-                    if ((json.get(USER_NAME).equals(user.getUserName())) && !(json.get("pwd").equals(cy.decrypt(user.getPassword())))) {
+                    if ((userInfo.getUsername().equals(user.getUserName())) && !(userInfo.getPwd().equals(cy.decrypt(user.getPassword())))) {
                         adminLoginDAO.insertSessionLog(new BigDecimal(user.getUID()), requestHttp.getRemoteAddr(), Boolean.FALSE);
                         adminLoginDAO.insertTranDetailSystemAccess(new BigDecimal(user.getUID()), new BigDecimal(user.getGroupID()), new BigDecimal(user.getGroupID()), user.getUserName(), 4L);
                         loginResult.setResult(Boolean.FALSE);
                         loginResult.setMessage("Invalid Password");
                     } //user x passw x
-                    else if ((!json.get(USER_NAME).equals(user.getUserName())) && !(json.get("pwd").equals(cy.decrypt(user.getPassword())))) {
+                    else if ((!userInfo.getUsername().equals(user.getUserName())) && !(userInfo.getPwd().equals(cy.decrypt(user.getPassword())))) {
                         adminLoginDAO.insertSessionLog(new BigDecimal(user.getUID()), requestHttp.getRemoteAddr(), Boolean.FALSE);
                         adminLoginDAO.insertTranDetailSystemAccess(new BigDecimal(user.getUID()), new BigDecimal(user.getGroupID()), new BigDecimal(user.getGroupID()), user.getUserName(), 4L);
                         loginResult.setResult(Boolean.FALSE);
                         loginResult.setMessage(NOPERMISSION);
                         logger.info("USER X PASS X");
                     } //user passw true
-                    else if ((json.get(USER_NAME).equals(user.getUserName())) && (json.get("pwd").equals(cy.decrypt(user.getPassword())))) {
+                    else if ((userInfo.getUsername().equals(user.getUserName())) && (userInfo.getPwd().equals(cy.decrypt(user.getPassword())))) {
                         
                         //expire
                         if (user.getExpireDate() != null && user.getExpireDate().before(new Date())) {
