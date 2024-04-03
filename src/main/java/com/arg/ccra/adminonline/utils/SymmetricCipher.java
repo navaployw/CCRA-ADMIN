@@ -29,7 +29,6 @@ import javax.crypto.NoSuchPaddingException;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -40,15 +39,6 @@ public final class SymmetricCipher
 
     @Autowired
     SecretKeyProvider skp;
-    // @Value("${com.arg.ccra.adminonline.utils.secretAlgor}")
-    // private String PROVIDER_SECRET_KEY;
-    // @Value("${com.arg.ccra.adminonline.utils.cipherAlgor}")
-    // private String USER_CIPHER_ALGOR;
-    // @Value("${com.arg.ccra.adminonline.utils.userAlgor}")
-    // private String USER_KEY_ALGOR;
-    // @Value("${com.arg.ccra.adminonline.utils.userKey}")
-    // private String USER_KEY;
-
     
     private static final int[] STREAM = {
         0x724f, 0x3041, 0x4258, 0x4e79, 0x4142, 0x3971, 0x5958, 0x5a68, 0x6543,
