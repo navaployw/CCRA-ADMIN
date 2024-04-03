@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.arg.ccra</groupId>
 	<artifactId>admin-spring-boot-service</artifactId>
-	<version>4.0.0</version>
+	<version>4.0.1</version>
 	<name>admin-spring-boot-service</name>
 	<description>CCRA3 Administrator Management</description>
 	<properties>
