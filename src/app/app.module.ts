@@ -23,7 +23,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
 import {MatTabsModule} from '@angular/material/tabs';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule, HttpClientXsrfModule, HttpXsrfTokenExtractor } from '@angular/common/http';
 import {NgxWebstorageModule} from 'ngx-webstorage';
 import { DialogComponent } from './component/dialog/dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -34,6 +34,7 @@ import {AuthGuard} from './utils/auth.service';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { DatePipe } from '@angular/common'
 import { AuthInterceptor } from './interceptor/http.interceptor';
+import { HttpXsrfCookieExtractor } from './interceptor/xrsf.interceptor';
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: '/login' },
   { path: 'home', component: HomeComponent ,canActivate : [AuthGuard]},
@@ -58,6 +59,10 @@ const routes: Routes = [
   ],
   imports: [
     BrowserModule,
+    HttpClientXsrfModule.withOptions({
+      cookieName: 'XSRF-TOKEN',
+      headerName: 'X-XSRF-TOKEN',
+    }),
     AppRoutingModule,
     BrowserAnimationsModule,
     MatCardModule,
@@ -82,12 +87,18 @@ const routes: Routes = [
     NzIconModule
 
   ],
-  providers: [DatePipe,
+  providers: [DatePipe,   
     {
         provide: HTTP_INTERCEPTORS,
         useClass: AuthInterceptor,
         multi: true
-    }],
+    },
+    // {
+    //   provide: HttpXsrfTokenExtractor,
+    //   useClass: AuthInterceptor
+    // }    
+  ],
+  
   bootstrap: [AppComponent],
   exports: [RouterModule],
   schemas: [ CUSTOM_ELEMENTS_SCHEMA ]

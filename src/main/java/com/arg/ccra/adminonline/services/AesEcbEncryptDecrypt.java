@@ -9,13 +9,19 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.arg.ccra.adminonline.utils.SecretKeyProvider;
+
 
 
 public class AesEcbEncryptDecrypt {
 
     private static final Logger LOG = LogManager.getLogger(AesEcbEncryptDecrypt.class.getName());
+
+    @Autowired
+    SecretKeyProvider skp;
+
     private static SecretKeySpec secretKey;
     private static byte[] key;
 
@@ -59,7 +65,7 @@ public class AesEcbEncryptDecrypt {
     public String encrypt(String strToEncrypt) {
         String encrypted = "";
         try {
-            Cipher cipher = Cipher.getInstance(SecretKeyProvider.PROVIDER_SECRET_KEY);
+            Cipher cipher = Cipher.getInstance(skp.PROVIDER_SECRET_KEY);
 
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
 
@@ -76,7 +82,7 @@ public class AesEcbEncryptDecrypt {
     public String decrypt(String strToDecrypt) {
         String decrypted = "";
         try {
-            Cipher cipher = Cipher.getInstance(SecretKeyProvider.PROVIDER_SECRET_KEY);
+            Cipher cipher = Cipher.getInstance(skp.PROVIDER_SECRET_KEY);
 
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
             decrypted = new String(cipher.doFinal(Base64.decodeBase64(strToDecrypt)));

@@ -37,6 +37,9 @@ public class HttpTraceFilterRepositoryManager extends OncePerRequestFilter{
     @Autowired
     private ApiCtrlService apiCtrlService;
     
+    @Autowired
+    private SymmetricCipher cipher;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
             String ctrlValue = apiCtrlService.getCtrlValueByCtrlType("encryptFlag");
@@ -62,7 +65,7 @@ public class HttpTraceFilterRepositoryManager extends OncePerRequestFilter{
                   logText =  String.format("getResponseBody(wrappedResponse).toString().length():: %s", getResponseBody(wrappedResponse).toString().length());
                   loggerS.info(logText);
                   if(encryptFlag){
-                    SymmetricCipher cy = SymmetricCipher.getInstance();
+                    SymmetricCipher cy = cipher.builder();
                     trnJsonObjResponse.setJsonResponse(cy.encrypt(getResponseBody(wrappedResponse).toString()));
                   }else{
                     trnJsonObjResponse.setJsonResponse(getResponseBody(wrappedResponse).toString());

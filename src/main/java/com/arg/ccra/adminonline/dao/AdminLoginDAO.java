@@ -50,9 +50,10 @@ public class AdminLoginDAO {
                      "and u.ADMINFLAG = 1 \n" +
                      "and u.DELETED = 0 and u.USERID = ?";
         List<User> results = this.jdbcTemplateApi.query(sql,params.toArray(), BeanPropertyRowMapper.newInstance(User.class));
-        infoLog = String.format("login>>>>> %s", results);
-        logger.info(infoLog);
-        return results.get(0);
+        // infoLog = String.format("login>>>>> %s", results);
+        // logger.info(infoLog);
+        logger.info(" FIND user size : "+ results.size());
+        return results.size()>0?results.get(0):null;
     }
 
     public User findByUid(Long uid) {

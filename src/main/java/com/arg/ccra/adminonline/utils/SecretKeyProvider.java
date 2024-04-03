@@ -1,15 +1,17 @@
 package com.arg.ccra.adminonline.utils;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-public interface SecretKeyProvider {
+@Component
+public class SecretKeyProvider {
     @Value("${com.arg.ccra.adminonline.utils.secretAlgor}")
-    public static String PROVIDER_SECRET_KEY = "";
-    @Value("${com.arg.ccra.adminonline.utils.secretAlgor}")
-    public static String USER_CIPHER_ALGOR = "";
+    public String PROVIDER_SECRET_KEY;
+    @Value("${com.arg.ccra.adminonline.utils.cipherAlgor}")
+    public String USER_CIPHER_ALGOR;
     @Value("${com.arg.ccra.adminonline.utils.userAlgor}")
-    public static String USER_KEY_ALGOR = "";
-    @Value("${com.arg.ccra.adminonline.utils.secretAlgor}")
-    public static String USER_KEY = "";
+    public String USER_KEY_ALGOR;
+    @Value("${com.arg.ccra.adminonline.utils.userKey}")
+    public String USER_KEY;
 }
 

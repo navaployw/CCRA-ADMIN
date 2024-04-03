@@ -45,6 +45,9 @@ public class AdminService {
     @Autowired
     private JWTService jwtService;
 
+    @Autowired
+    private SymmetricCipher cipher;
+
     private final Logger logger = (Logger) LoggerFactory.getLogger(AdminService.class);
     private String logText ="";
     private final String USER_NAME ="username";
@@ -67,14 +70,17 @@ public class AdminService {
         HttpServletRequest requestHttp = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         logText = String.format("IP:: %s", requestHttp.getRemoteAddr());
         logger.info(logText);
+
         AdminLoginDAO adminLoginDAO = new AdminLoginDAO(jdbcTemplateAPI);
         LoginData loginResult = new LoginData();
         loginResult.setResult(Boolean.FALSE);
         loginResult.setMessage(NOPERMISSION);
+
         User user = adminLoginDAO.login(userInfo.getUsername());
-            if (userInfo.getUsername().equals(user.getUserName())) {
+            if (user != null && userInfo.getUsername().equals(user.getUserName())) 
+            {
                 try {
-                    SymmetricCipher cy = SymmetricCipher.getInstance();
+                    SymmetricCipher cy = cipher.builder();
                     logText = String.format("usernameDB>>>> %s", user.getUserName());
                     logger.info(logText);
                     logText = String.format("pwdDB>>>> %s", cy.decrypt(user.getPassword()));
@@ -84,7 +90,7 @@ public class AdminService {
                         adminLoginDAO.insertSessionLog(new BigDecimal(user.getUID()), requestHttp.getRemoteAddr(), Boolean.FALSE);
                         adminLoginDAO.insertTranDetailSystemAccess(new BigDecimal(user.getUID()), new BigDecimal(user.getGroupID()), new BigDecimal(user.getGroupID()), user.getUserName(), 4L);
                         loginResult.setResult(Boolean.FALSE);
-                        loginResult.setMessage("Invalid Password");
+                        loginResult.setMessage("Invalid user or password.");
                     } //user x passw x
                     else if ((!userInfo.getUsername().equals(user.getUserName())) && !(userInfo.getPwd().equals(cy.decrypt(user.getPassword())))) {
                         adminLoginDAO.insertSessionLog(new BigDecimal(user.getUID()), requestHttp.getRemoteAddr(), Boolean.FALSE);
@@ -125,6 +131,11 @@ public class AdminService {
                 } catch (Exception ex) {
                     logger.error(ex.getMessage(), ex);
                 }
+            }
+            else
+            {   
+                loginResult.setResult(Boolean.FALSE);
+                loginResult.setMessage("Invalid user or password.");
             }
 
         logText = String.format("loginResult>>>> %s", loginResult);
