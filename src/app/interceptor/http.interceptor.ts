@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpResponse, HttpXsrfTokenExtractor } from '@angular/common/http';
+import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpResponse, HttpXsrfTokenExtractor, HttpErrorResponse } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 
 @Injectable()
@@ -37,17 +37,30 @@ export class AuthInterceptor implements HttpInterceptor {
 
      // Continue with the request and intercept the response
      return next.handle(request).pipe(
-        tap((event) => {
-            if (event instanceof HttpResponse && (event.status === 200 || event.status === 201)) {
-                // console.log('event.headers :>> ', structuredClone(event.headers));
-                const newToken = event.headers.get('Authorization');
-                console.log('newToken :>> ', newToken);
-                if (newToken) {
-                  localStorage.setItem("token", newToken);
-                }
+      tap(({
+          next: (event) => {
+
+              if (event instanceof HttpResponse && (event.status === 200 || event.status === 201)) {
+                  console.log('event :>> ', event);
+                  const newToken = event.headers.get('Authorization');
+                  if (newToken) {
+                      localStorage.setItem('token', newToken);
+                  }
+                  if (request.url.includes("authentication")) {
+                      const newToken = event.body?.entries?.token
+                      localStorage.setItem('token', `Bearer ${newToken}`);
+
+                  }
               }
-        })
-      );
+          },
+          error: (err) => {
+              if (err instanceof HttpErrorResponse && (err.status === 404 || err.status === 401 || err.status >= 500)) {
+                  localStorage.clear()
+                  // this.router.navigate(['/auth/login']);
+              }
+          },
+      }))
+  );
 
   }
 }

@@ -72,9 +72,7 @@ public class AdminService {
         logger.info(logText);
 
         AdminLoginDAO adminLoginDAO = new AdminLoginDAO(jdbcTemplateAPI);
-        LoginData loginResult = new LoginData();
-        loginResult.setResult(Boolean.FALSE);
-        loginResult.setMessage(NOPERMISSION);
+        LoginData.LoginDataBuilder loginResult = LoginData.builder().result(Boolean.FALSE).message(NOPERMISSION);
 
         User user = adminLoginDAO.login(userInfo.getUsername());
             if (user != null && userInfo.getUsername().equals(user.getUserName())) 
@@ -89,14 +87,12 @@ public class AdminService {
                     if ((userInfo.getUsername().equals(user.getUserName())) && !(userInfo.getPwd().equals(cy.decrypt(user.getPassword())))) {
                         adminLoginDAO.insertSessionLog(new BigDecimal(user.getUID()), requestHttp.getRemoteAddr(), Boolean.FALSE);
                         adminLoginDAO.insertTranDetailSystemAccess(new BigDecimal(user.getUID()), new BigDecimal(user.getGroupID()), new BigDecimal(user.getGroupID()), user.getUserName(), 4L);
-                        loginResult.setResult(Boolean.FALSE);
-                        loginResult.setMessage("Invalid user or password.");
+                        loginResult.result(Boolean.FALSE).message("Invalid user or password.");
                     } //user x passw x
                     else if ((!userInfo.getUsername().equals(user.getUserName())) && !(userInfo.getPwd().equals(cy.decrypt(user.getPassword())))) {
                         adminLoginDAO.insertSessionLog(new BigDecimal(user.getUID()), requestHttp.getRemoteAddr(), Boolean.FALSE);
                         adminLoginDAO.insertTranDetailSystemAccess(new BigDecimal(user.getUID()), new BigDecimal(user.getGroupID()), new BigDecimal(user.getGroupID()), user.getUserName(), 4L);
-                        loginResult.setResult(Boolean.FALSE);
-                        loginResult.setMessage(NOPERMISSION);
+                        loginResult.result(Boolean.FALSE).message(NOPERMISSION);
                         logger.info("USER X PASS X");
                     } //user passw true
                     else if ((userInfo.getUsername().equals(user.getUserName())) && (userInfo.getPwd().equals(cy.decrypt(user.getPassword())))) {
@@ -105,25 +101,21 @@ public class AdminService {
                         if (user.getExpireDate() != null && user.getExpireDate().before(new Date())) {
                             adminLoginDAO.insertSessionLog(new BigDecimal(user.getUID()), requestHttp.getRemoteAddr(), Boolean.FALSE);
                             adminLoginDAO.insertTranDetailSystemAccess(new BigDecimal(user.getUID()), new BigDecimal(user.getGroupID()), new BigDecimal(user.getGroupID()), user.getUserName(), 7L);
-                            loginResult.setResult(Boolean.FALSE);
-                            loginResult.setMessage("Your password has been expired");
+                            loginResult.result(Boolean.FALSE).message("Your password has been expired");
                         } //Disabled
                         else if (user.getDisabled()) {
                             adminLoginDAO.insertSessionLog(new BigDecimal(user.getUID()), requestHttp.getRemoteAddr(), Boolean.FALSE);
                             adminLoginDAO.insertTranDetailSystemAccess(new BigDecimal(user.getUID()), new BigDecimal(user.getGroupID()), new BigDecimal(user.getGroupID()), user.getUserName(), 5L);
-                            loginResult.setResult(Boolean.FALSE);
-                            loginResult.setMessage("User has been disabled");
+                            loginResult.result(Boolean.FALSE).message("User has been disabled");
                         } //success
                         else {
-                            loginResult.setResult(Boolean.TRUE);
-                            loginResult.setMessage("Sucessful");
-                            loginResult.setUserId(user.getUID());
-                            loginResult.setGroupId(user.getGroupID());
-                            loginResult.setGroupAIID(user.getGroupAIID());
-                            adminLoginDAO.insertSessionLog(new BigDecimal(user.getUID()), requestHttp.getRemoteAddr(), Boolean.TRUE);
-                            adminLoginDAO.insertTranDetailSystemAccess(new BigDecimal(user.getUID()), new BigDecimal(user.getGroupID()), new BigDecimal(user.getGroupID()), user.getUserName(), 1L);
-                            String token = jwtService.generateToken(user.getUID().longValue(), user.getUserID());
-                            res.setHeader("Authorization", "Bearer " + token);
+                            loginResult.result(Boolean.TRUE)
+                            .message("Sucessful")
+                            .userId(user.getUID())
+                            .groupId(user.getGroupID())
+                            .groupAIID(user.getGroupAIID());
+                            
+                            loginResult.token(jwtService.generateToken(user.getUID().longValue(), user.getUserID()));
                             
                         }
                         
@@ -134,13 +126,12 @@ public class AdminService {
             }
             else
             {   
-                loginResult.setResult(Boolean.FALSE);
-                loginResult.setMessage("Invalid user or password.");
+                loginResult.result(Boolean.FALSE).message("Invalid user or password.");
             }
 
         logText = String.format("loginResult>>>> %s", loginResult);
         logger.info(logText);
-        return loginResult;
+        return loginResult.build();
     }
 
     public ResponseModel logoutService(String requestJson) {

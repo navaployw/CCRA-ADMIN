@@ -5,11 +5,11 @@
  */
 package com.arg.ccra.adminonline.models;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Builder;
+import lombok.Data;
 
-@Getter
-@Setter
+@Builder
+@Data
 public class LoginData {
     
     private Boolean result;
@@ -17,6 +17,7 @@ public class LoginData {
     private Integer userId;
     private Integer groupId;
     private Integer groupAIID;
+    private String token;
 
 }
 
