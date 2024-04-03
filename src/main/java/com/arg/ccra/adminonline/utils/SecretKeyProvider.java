@@ -1,11 +1,7 @@
 package com.arg.ccra.adminonline.utils;
 
-import lombok.Builder;
-import lombok.Data;
 
-@Data
-@Builder
-public class SecretKeyProvider {
+public interface SecretKeyProvider {
     public final static String PROVIDER_SECRET_KEY = "AES/ECB/PKCS5Padding";
     public final static String USER_CIPHER_ALGOR = "AES";
     public final static String USER_KEY_ALGOR = "AES";
