@@ -59,14 +59,8 @@ public class WebSecurityConfig {
     
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
-        // We don't need CSRF for this example
-        // httpSecurity.csrf().disable()
-        httpSecurity.csrf(AbstractHttpConfigurer::disable)
-        // httpSecurity.csrf((csrf) -> csrf
-		// 		.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-		// 	)
-        // don't authenticate this particular request
-        .authorizeHttpRequests(authorize -> authorize
+        // We don't need CSRF for this example         
+        httpSecurity.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/get_ccra_report"
                                     ,"api/admin/checkLogin"
                                     ,"/api/admin/logout"
@@ -89,13 +83,15 @@ public class WebSecurityConfig {
                                     ,"/api-docs/**"
                 )
                 .permitAll()
-                .anyRequest().authenticated()
-            )
+                .anyRequest()
+                .authenticated()                
+        )
+        
         .formLogin(formLogin -> formLogin
             .loginPage("/login")
             .permitAll()
         )
-              
+        .csrf(AbstractHttpConfigurer::disable)
         // make sure we use stateless session; session won't be used to
         // store user's state.
         .exceptionHandling(exceptionHandlingCustomizer -> exceptionHandlingCustomizer
