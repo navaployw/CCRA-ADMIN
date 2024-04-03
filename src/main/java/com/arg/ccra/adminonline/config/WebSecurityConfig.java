@@ -62,7 +62,7 @@ public class WebSecurityConfig {
         // We don't need CSRF for this example         
         
         httpSecurity
-        .csrf(csrf -> csrf.ignoringRequestMatchers("/api/admin/checkLogin"))
+        .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
         .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/get_ccra_report"
                                     ,"/api/admin/checkLogin"
