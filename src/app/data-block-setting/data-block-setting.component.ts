@@ -79,21 +79,34 @@ export class DataBlockSettingComponent implements OnInit {
 
     }
     else{
-    this._api.insertUpdateDataBlockList(this.modelMain, (res: any) => {
-      console.log("insertUpdateDataBlockList>>>",res)
-      if(res.duplicate){
-        Swal.fire('', res.chkRemark, 'warning')
-      }
-      else{
 
-        Swal.fire({title:res.chkRemark,confirmButtonText:'OK'}).then((result) => {
-          window.location.reload();
-        }); 
+      const saveDialogRef = this.dialogOpener.openSaveDialog(
+        "Do you want to save?",
+        '',
+        {confirm_wording:"Save"}
+      );
+      saveDialogRef.afterClosed().subscribe(result => {
+        console.log("Result::",result);
+        if (result.isSaveClicked) 
+        this._api.insertUpdateDataBlockList(this.modelMain, (res: any) => {
+          console.log("insertUpdateDataBlockList>>>",res)
+          if(res.duplicate){
+            Swal.fire('', res.chkRemark, 'warning')
+          }
+          else{
+    
+            Swal.fire({title:res.chkRemark,confirmButtonText:'OK'}).then((result) => {
+              window.location.reload();
+            }); 
+    
+        
+          }
+       
+        });
+      });
+
 
     
-      }
-   
-    });
   }
   }
   removeDataBlock(){
