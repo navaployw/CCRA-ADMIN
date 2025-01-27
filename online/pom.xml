@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.arg.ccra3.admin</groupId>
+        <artifactId>ccra3-admin</artifactId>
+        <version>3.0.1</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <artifactId>admin-spring-boot-service</artifactId>
+    <packaging>jar</packaging>
+    <name>CCRA3-ADMIN-ONLINE</name>
+    <description>CCRA3-ADMIN-ONLINE</description>
+    
+    <properties>        
+        <swagger-api.version>2.1.10</swagger-api.version>
+        <swagger-ui.version>3.52.1</swagger-ui.version>
+    </properties>
+
+    <dependencies>
+
+        <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.arg.ccra3.admin.model</groupId>
+            <artifactId>CCAR3-ADMIN-MODEL</artifactId>
+            <version>3.0.1</version>
+        </dependency>        
+        <dependency>
+            <groupId>com.arg.ccra3.admin.dao</groupId>
+            <artifactId>CCAR3-ADMIN-DAO</artifactId>
+            <version>3.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.arg.ccra3.admin.common</groupId>
+            <artifactId>CCAR3-ADMIN-COMMON</artifactId>
+            <version>3.0.1</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin> <!--junit-->
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M6</version>
+                <configuration>
+                    <excludedGroups>ctrl</excludedGroups>
+                </configuration>
+            </plugin>
+            
+            <!--fix [ERROR] Failed to execute goal org.apache.maven.plugins:maven-war-plugin:2.2:war (default-war) on project ccra3-wbs: Execution default-war of goal org.apache.maven.plugins:maven-war-plugin:2.2:war failed: Unable to load the mojo 'war' in the plugin 'org.apache.maven.plugins:maven-war-plugin:2.2' due to an API incompatibility: org.codehaus.plexus.component.repository.exception.ComponentLookupException: Cannot access defaults field of Properties-->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${springboot-version}</version>
+                <configuration>    
+                    <mainClass>com.arg.ccra3.online.Main</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>1.12.0</version>
+                <configuration>
+                    <nodeVersion>v16.13.1</nodeVersion>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>install-npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>npm-install</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>npm-build</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+<!--                            <arguments>run-script uat</arguments>-->
+                            <arguments>run-script build</arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm-build-uat</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run-script uat</arguments>
+                            <!--<arguments>run-script build</arguments>-->
+                        </configuration>
+                    </execution>
+                    <!--execution>
+                        <id>npm-test</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run-script test</arguments>
+                        </configuration>
+                        <phase>test</phase>
+                    </execution-->
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
