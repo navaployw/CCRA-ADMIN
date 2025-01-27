@@ -9,6 +9,7 @@ import com.arg.ccra3.model.api.UserAPI;
 import java.sql.ResultSet;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -167,18 +168,30 @@ public class UserDAO {
     }
     
     
-    public List<Map<String, Object>> searchWithUserId(String userId){
-        StringBuilder sql = new StringBuilder("declare @Keyword varchar(256) = ");
-        
-        if(userId == null || userId.trim().isEmpty())
-            sql.append("null");
-        else
-            sql.append("'").append(userId).append("'");
+//    public List<Map<String, Object>> searchWithUserId(String userId){
+//        StringBuilder sql = new StringBuilder("declare @Keyword varchar(256) = ");
+//        
+//        if(userId == null || userId.trim().isEmpty())
+//            sql.append("null");
+//        else
+//            sql.append("'").append(userId).append("'");
+//        
+//        sql.append(" declare @Result tinyint declare @ResultMessage varchar(256) exec [get_list_user_prod] @result , @ResultMessage ,@Keyword ");
+//        String sqlStr = sql.toString();
+//        logger.info(sqlStr);
+//        return jdbcTemplateAPI.queryForList(sql.toString());
+//    }
+     public List<Map<String, Object>> searchWithUserId(String userId) {
+        StringBuilder sql = new StringBuilder("declare @Keyword varchar(256) = ?");
+        List<Object> params = new ArrayList<>();
+        params.add(userId); 
         
         sql.append(" declare @Result tinyint declare @ResultMessage varchar(256) exec [get_list_user_prod] @result , @ResultMessage ,@Keyword ");
+        
         String sqlStr = sql.toString();
         logger.info(sqlStr);
-        return jdbcTemplateAPI.queryForList(sql.toString());
+        
+        return jdbcTemplateAPI.queryForList(sqlStr, params.toArray());
     }
     public Map<String, Object> checkUserDuplicateAI(long uid, long gid, long gaiid){
         String sql = "declare @Result tinyint declare @ResultMessage varchar(256) "
@@ -212,7 +225,7 @@ public class UserDAO {
         
         long uid = userJson.optLong("uid");
         insertDataBlockFromUID(uid, userJson.optJSONArray("newDataBlockIDs"));
-        DeleteDataBlockFromUID(uid, userJson.optJSONArray("delDataBlockIDs"));
+        deleteDataBlockFromUID(uid, userJson.optJSONArray("delDataBlockIDs"));
         return saveUser(uid, userJson);
     }
     public long saveUser(long uid, JSONObject userJson){
@@ -246,32 +259,67 @@ public class UserDAO {
         
         return userApiRepo.save(user).getAid();
     }
-    public void insertDataBlockFromUID(long uid, JSONArray newDataBlockIDs){
-        if(newDataBlockIDs != null && newDataBlockIDs.isEmpty())return;
-        Date now = new Date();
-        for(var bid : newDataBlockIDs){
-            this.jdbcTemplateAPI.update(
-                "insert into API_MAP_USER_DATABLOCK(BLOCKID, UID, CREATEDATE) values(?,?,?)",
-                new Object[]{(int)bid, uid, now}
-            );
-        }
-    }
-    public void DeleteDataBlockFromUID(long uid, JSONArray delDataBlockIDs){
-        if(delDataBlockIDs != null && delDataBlockIDs.isEmpty())return;
-        StringBuilder sql = new StringBuilder("delete from API_MAP_USER_DATABLOCK where UID = ");
-        sql.append(uid);
-        sql.append(" and BLOCKID in (");
-        String prefix = "";
-        for(var id : delDataBlockIDs){
-            sql.append(prefix);
-            sql.append(id);
-            prefix = ",";
-        }
-        sql.append(")");
+//    public void insertDataBlockFromUID(long uid, JSONArray newDataBlockIDs){
+//        if(newDataBlockIDs != null && newDataBlockIDs.isEmpty())return;
+//        Date now = new Date();
+//        for(var bid : newDataBlockIDs){
+//            this.jdbcTemplateAPI.update(
+//                "insert into API_MAP_USER_DATABLOCK(BLOCKID, UID, CREATEDATE) values(?,?,?)",
+//                new Object[]{(int)bid, uid, now}
+//            );
+//        }
+//    }
+      public void insertDataBlockFromUID(long uid, JSONArray newDataBlockIDs) {
+        if (newDataBlockIDs == null || newDataBlockIDs.isEmpty()) return;
         
-        this.jdbcTemplateAPI.update(sql.toString());
+        Date now = new Date();
+        
+        String sql = "INSERT INTO API_MAP_USER_DATABLOCK (BLOCKID, UID, CREATEDATE) VALUES (?, ?, ?)";
+        
+        for (Object bid : newDataBlockIDs) {
+            int blockId = (int) bid;
+            jdbcTemplateAPI.update(sql, blockId, uid, now);
+        }
     }
+//    public void DeleteDataBlockFromUID(long uid, JSONArray delDataBlockIDs){
+//        if(delDataBlockIDs != null && delDataBlockIDs.isEmpty())return;
+//        StringBuilder sql = new StringBuilder("delete from API_MAP_USER_DATABLOCK where UID = ");
+//        sql.append(uid);
+//        sql.append(" and BLOCKID in (");
+//        String prefix = "";
+//        for(var id : delDataBlockIDs){
+//            sql.append(prefix);
+//            sql.append(id);
+//            prefix = ",";
+//        }
+//        sql.append(")");
+//        
+//        this.jdbcTemplateAPI.update(sql.toString());
+//    }
+    public void deleteDataBlockFromUID(long uid, JSONArray delDataBlockIDs) {
+        if (delDataBlockIDs == null || delDataBlockIDs.isEmpty()) {
+            return;
+        }
     
+        String sql = "DELETE FROM API_MAP_USER_DATABLOCK WHERE UID = ? AND BLOCKID IN (";
+        StringBuilder placeholders = new StringBuilder();
+        for (int i = 0; i < delDataBlockIDs.length(); i++) {
+            if (i > 0) {
+                placeholders.append(",");
+            }
+            placeholders.append("?");
+        }
+        sql += placeholders.toString() + ")";
+    
+        List<Object> params = new ArrayList<>();
+        params.add(uid);
+    
+        for (Object id : delDataBlockIDs) {
+            params.add((int) id);
+        }
+    
+        this.jdbcTemplateAPI.update(sql, params.toArray());
+    }
     public boolean isTokenActiveByAID(long aid){
         return jdbcTemplateAPI.queryForList(
             "select AID from API_TOKEN where EXPIRE_TIME > getdate() and AID = ?",
